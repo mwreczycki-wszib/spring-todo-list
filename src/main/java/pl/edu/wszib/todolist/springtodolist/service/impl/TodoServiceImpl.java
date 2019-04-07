@@ -47,7 +47,9 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public TodoDTO update(TodoDTO todoDTO) {
-        return save(todoDTO);
+        return Optional.of(dao.save(mapper.map(todoDTO, Todo.class)))
+                .map(todo -> mapper.map(todo, TodoDTO.class))
+                .orElse(null);
     }
 
     @Override
@@ -61,7 +63,7 @@ public class TodoServiceImpl implements TodoService {
 
     @Override
     public List<TodoDTO> upcomming() {
-        return dao.findTop5ByStatusNotOrderByDueDateAsc(Status.COMPLETED)
+        return dao.findTop5ByStatusIsNotOrderByDueDateAsc(Status.COMPLETED)
                 .stream()
                 .map(todo -> mapper.map(todo, TodoDTO.class))
                 .collect(Collectors.toList());
