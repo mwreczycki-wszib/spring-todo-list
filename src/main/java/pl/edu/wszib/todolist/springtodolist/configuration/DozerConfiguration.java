@@ -5,12 +5,16 @@ import org.dozer.Mapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.Collections;
+
 @Configuration
 public class DozerConfiguration {
 
     @Bean
     public Mapper mapper() {
-        return new DozerBeanMapper();
+        DozerBeanMapper mapper = new DozerBeanMapper();
+        mapper.setMappingFiles(Collections.singletonList("dozer_mapping.xml"));
+        return mapper;
     }
 
 }

@@ -1,8 +1,10 @@
 package pl.edu.wszib.todolist.springtodolist;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.wszib.todolist.springtodolist.dto.TodoDTO;
 import pl.edu.wszib.todolist.springtodolist.model.Status;
+import pl.edu.wszib.todolist.springtodolist.service.TodoService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,44 +13,47 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 public class TodoController {
 
+    @Autowired
+    private TodoService todoService;
+
     @GetMapping("/todos")
     public List<TodoDTO> all(){
-        return ToDoDB.getAll().stream().map(ToDoConverter::convert).collect(Collectors.toList());
+        return todoService.findAll();
     }
 
     @GetMapping("/todos/upcomming")
     public List<TodoDTO> upcomming(){
-        return ToDoDB.upcomming().stream().map(ToDoConverter::convert).collect(Collectors.toList());
+        return todoService.upcomming();
     }
 
     @GetMapping("/todos/search/{status}")
-    public List<TodoDTO> search(@PathVariable String status){
-        return ToDoDB.search(Status.valueOf(status)).stream().map(ToDoConverter::convert).collect(Collectors.toList());
+    public List<TodoDTO> search(@PathVariable Status status){
+        return todoService.search(status);
     }
 
     @GetMapping("/todos/count/{status}")
-    public int count(@PathVariable String status){
-        return ToDoDB.search(Status.valueOf(status)).size();
+    public int count(@PathVariable Status status){
+        return todoService.count(status);
     }
 
     @GetMapping("/todo/{id}")
-    public TodoDTO get(@PathVariable long id){
-        return ToDoConverter.convert(ToDoDB.get(id));
+    public TodoDTO get(@PathVariable int id){
+        return todoService.find(id);
     }
 
     @PostMapping("/todo")
     public TodoDTO add(@RequestBody TodoDTO todoDTO){
-        return ToDoConverter.convert(ToDoDB.add(ToDoConverter.convert(todoDTO)));
+        return todoService.save(todoDTO);
     }
 
     @PutMapping("/todo")
     public TodoDTO update(@RequestBody TodoDTO todoDTO){
-        return ToDoConverter.convert(ToDoDB.update(ToDoConverter.convert(todoDTO)));
+        return todoService.update(todoDTO);
     }
 
     @DeleteMapping("/todo/{id}")
-    public TodoDTO remove(@PathVariable long id){
-        return ToDoConverter.convert(ToDoDB.remove(id));
+    public TodoDTO remove(@PathVariable int id){
+        return todoService.remove(id);
     }
 
 }
